@@ -1,0 +1,229 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  FULFILLED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  COD
+  CARD
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum CustomizationStatus {
+  DRAFT
+  SUBMITTED
+  REVIEWING
+  APPROVED
+  REJECTED
+  FULFILLED
+}
+
+enum UploadStatus {
+  NOT_STARTED
+  PENDING
+  UPLOADED
+  FAILED
+}
+
+enum ChatSessionStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum ChatMessageRole {
+  SYSTEM
+  ASSISTANT
+  USER
+}
+
+model Product {
+  id                     String                 @id
+  name                   String
+  subtitle               String
+  description            String
+  price                  Int
+  imageSrc               String
+  imageAlt               String
+  colors                 Json
+  sizes                  Json?
+  isActive               Boolean                @default(true)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  cartItems              CartItem[]
+  orderItems             OrderItem[]
+  customizationRequests  CustomizationRequest[]
+  reviews                Review[]
+}
+
+model CartItem {
+  id                     String                  @id @default(cuid())
+  sessionId              String
+  productId              String
+  productName            String
+  subtitle               String
+  productImageSrc        String
+  productImageAlt        String
+  unitPrice              Int
+  quantity               Int                     @default(1)
+  color                  String
+  size                   String?
+  customTitle            String
+  customStory            String                  @default("")
+  uploadedImageUrl       String?
+  customizationRequestId String?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  product                Product                 @relation(fields: [productId], references: [id], onDelete: Restrict)
+  customizationRequest   CustomizationRequest?   @relation(fields: [customizationRequestId], references: [id], onDelete: SetNull)
+
+  @@index([sessionId, updatedAt(sort: Desc)])
+  @@index([productId])
+}
+
+model Order {
+  id                  String          @id @default(cuid())
+  orderNumber         String          @unique
+  sessionId           String
+  status              OrderStatus     @default(PENDING)
+  paymentMethod       PaymentMethod
+  paymentStatus       PaymentStatus   @default(PENDING)
+  subtotal            Int
+  shipping            Int
+  total               Int
+  itemCount           Int
+  firstName           String
+  lastName            String
+  email               String
+  phone               String
+  addressLine         String
+  city                String
+  area                String
+  postalCode          String
+  deliveryNotes       String          @default("")
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  items               OrderItem[]
+  reviews             Review[]
+
+  @@index([sessionId, createdAt(sort: Desc)])
+}
+
+model OrderItem {
+  id                     String                 @id @default(cuid())
+  orderId                String
+  productId              String
+  productName            String
+  subtitle               String
+  productImageSrc        String
+  productImageAlt        String
+  unitPrice              Int
+  quantity               Int                    @default(1)
+  color                  String
+  size                   String?
+  customTitle            String
+  customStory            String                 @default("")
+  uploadedImageUrl       String?
+  customizationRequestId String?
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  order                  Order                  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product                Product                @relation(fields: [productId], references: [id], onDelete: Restrict)
+  customizationRequest   CustomizationRequest?  @relation(fields: [customizationRequestId], references: [id], onDelete: SetNull)
+  reviews                Review[]
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model CustomizationRequest {
+  id                 String               @id @default(cuid())
+  sessionId          String
+  productId          String
+  productName        String
+  productSubtitle    String
+  color              String
+  size               String?
+  customTitle        String
+  customStory        String               @default("")
+  quantity           Int                  @default(1)
+  unitPrice          Int
+  totalPrice         Int
+  uploadedImageUrl   String?
+  uploadedImageName  String?
+  uploadedStorageKey String?
+  uploadStatus       UploadStatus         @default(NOT_STARTED)
+  status             CustomizationStatus  @default(DRAFT)
+  notes              String               @default("")
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  product            Product              @relation(fields: [productId], references: [id], onDelete: Restrict)
+  cartItems          CartItem[]
+  orderItems         OrderItem[]
+
+  @@index([sessionId, updatedAt(sort: Desc)])
+  @@index([productId])
+}
+
+model Review {
+  id          String    @id @default(cuid())
+  sessionId   String
+  orderId     String
+  orderItemId String
+  productId   String
+  productName String
+  rating      Int
+  reviewText  String    @default("")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItem    OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([orderId, orderItemId])
+  @@index([sessionId, updatedAt(sort: Desc)])
+  @@index([productId])
+}
+
+model ChatSession {
+  id              String             @id @default(cuid())
+  sessionId       String
+  title           String?
+  status          ChatSessionStatus  @default(ACTIVE)
+  contextSummary  String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  messages        ChatMessage[]
+
+  @@index([sessionId, updatedAt(sort: Desc)])
+}
+
+model ChatMessage {
+  id            String           @id @default(cuid())
+  chatSessionId String
+  role          ChatMessageRole
+  content       String
+  metadata      Json?
+  createdAt     DateTime         @default(now())
+  chatSession   ChatSession      @relation(fields: [chatSessionId], references: [id], onDelete: Cascade)
+
+  @@index([chatSessionId, createdAt])
+}

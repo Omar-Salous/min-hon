@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f6f0e5;
+  --foreground: #201d19;
+  --surface: #fffaf2;
+  --surface-strong: #efe3d0;
+  --surface-soft: #f8f1e6;
+  --border: #d9ccb9;
+  --border-strong: #c5b59d;
+  --accent: #4d6b4a;
+  --accent-deep: #324930;
+  --accent-soft: #dbe5d8;
+  --highlight: #b88650;
+  --highlight-soft: #ead8be;
+  --muted: #686258;
+  --shadow-soft: 0 18px 50px rgba(75, 57, 32, 0.08);
+  --shadow-card: 0 10px 30px rgba(68, 50, 28, 0.06);
+  --focus-ring: 0 0 0 2px rgba(77, 107, 74, 0.2), 0 0 0 5px rgba(77, 107, 74, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(184, 134, 80, 0.1), transparent 28%),
+    radial-gradient(circle at top right, rgba(77, 107, 74, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(255, 250, 242, 0.72), rgba(246, 240, 229, 0.94)),
+    var(--background);
+  color: var(--foreground);
+  font-family: "Segoe UI", "Trebuchet MS", Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  background:
+    radial-gradient(circle at 15% 12%, rgba(184, 134, 80, 0.06), transparent 0 18%),
+    radial-gradient(circle at 82% 16%, rgba(77, 107, 74, 0.05), transparent 0 16%);
+  z-index: -1;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+main {
+  position: relative;
+}
+
+section {
+  position: relative;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  transition:
+    border-color 220ms ease,
+    background-color 220ms ease,
+    color 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms ease,
+    opacity 220ms ease;
+}
+
+input:hover,
+textarea:hover,
+select:hover {
+  border-color: var(--border-strong);
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    letter-spacing: 0;
+  }
+}
