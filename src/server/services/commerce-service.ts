@@ -18,10 +18,6 @@ import type {
   ChatMessageInput,
   ChatSessionInput,
   CommerceSessionSnapshot,
-  CreateOrderInput,
-  CustomizationRequestInput,
-  SaveReviewInput,
-  UploadIntentInput,
 } from "@/features/commerce/commerce-contracts";
 import type {
   CartItem,
@@ -37,6 +33,13 @@ import {
   calculateTotal,
   createOrderId,
 } from "@/features/commerce/commerce-utils";
+import type {
+  AddToCartPayload,
+  CreateOrderPayload,
+  CustomizationRequestPayload,
+  SaveReviewPayload,
+  UploadIntentPayload,
+} from "@/server/validation/commerce";
 
 type ProductRecord = {
   id: string;
@@ -296,10 +299,7 @@ export async function getSessionCommerceState(sessionId: string): Promise<Commer
 }
 
 export async function addCartItem(
-  input: Omit<CustomizationRequestInput, "uploadStatus"> & {
-    sessionId: string;
-    uploadedImageUrl?: string;
-  },
+  input: AddToCartPayload,
 ) {
   const db = getDatabaseClient();
   if (!db) {
@@ -452,7 +452,7 @@ export async function clearCart(sessionId: string) {
   return getSessionCommerceState(sessionId);
 }
 
-export async function createOrderFromSession(input: CreateOrderInput) {
+export async function createOrderFromSession(input: CreateOrderPayload) {
   const db = getDatabaseClient();
   if (!db) {
     throw createDatabaseFallbackError("Order creation");
@@ -528,7 +528,7 @@ export async function createOrderFromSession(input: CreateOrderInput) {
   return serializeOrder(order);
 }
 
-export async function saveReview(input: SaveReviewInput) {
+export async function saveReview(input: SaveReviewPayload) {
   const db = getDatabaseClient();
   if (!db) {
     throw createDatabaseFallbackError("Review saving");
@@ -579,7 +579,7 @@ export async function saveReview(input: SaveReviewInput) {
   return serializeReview(review);
 }
 
-export async function createCustomizationRequest(input: CustomizationRequestInput) {
+export async function createCustomizationRequest(input: CustomizationRequestPayload) {
   const db = getDatabaseClient();
   if (!db) {
     throw createDatabaseFallbackError("Customization request saving");
@@ -624,7 +624,7 @@ export async function createCustomizationRequest(input: CustomizationRequestInpu
   });
 }
 
-export async function createUploadIntent(input: UploadIntentInput) {
+export async function createUploadIntent(input: UploadIntentPayload) {
   const safeFileName = input.fileName.replace(/[^a-zA-Z0-9._-]/g, "-");
   const storageKey = `${input.sessionId}/${Date.now()}-${safeFileName}`;
 

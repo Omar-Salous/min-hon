@@ -115,11 +115,11 @@ export const sessionQuerySchema = z.object({
   sessionId: sessionIdSchema,
 });
 
-export type AddToCartPayload = z.infer<typeof addToCartSchema>;
-export type UpdateCartItemPayload = z.infer<typeof updateCartItemSchema>;
-export type CreateOrderPayload = z.infer<typeof createOrderSchema>;
-export type SaveReviewPayload = z.infer<typeof saveReviewSchema>;
-export type CustomizationRequestPayload = z.infer<typeof customizationRequestSchema>;
-export type UploadIntentPayload = z.infer<typeof uploadIntentSchema>;
-export type CreateChatSessionPayload = z.infer<typeof createChatSessionSchema>;
-export type CreateChatMessagePayload = z.infer<typeof createChatMessageSchema>;
+export type AddToCartPayload = z.output<typeof addToCartSchema>;
+export type UpdateCartItemPayload = z.output<typeof updateCartItemSchema>;
+export type CreateOrderPayload = z.output<typeof createOrderSchema>;
+export type SaveReviewPayload = z.output<typeof saveReviewSchema>;
+export type CustomizationRequestPayload = z.output<typeof customizationRequestSchema>;
+export type UploadIntentPayload = z.output<typeof uploadIntentSchema>;
+export type CreateChatSessionPayload = z.output<typeof createChatSessionSchema>;
+export type CreateChatMessagePayload = z.output<typeof createChatMessageSchema>;

@@ -14,8 +14,11 @@ import {
 import { useCommerce } from "@/features/commerce/commerce-provider";
 import { formatPrice } from "@/features/commerce/commerce-utils";
 import { Container } from "@/components/ui/container";
+import type { CheckoutDetails } from "@/features/commerce/commerce-types";
 
-const requiredCheckoutFields: Array<keyof ReturnType<typeof useCommerce>["checkoutDetails"]> = [
+type RequiredCheckoutField = Exclude<keyof CheckoutDetails, "deliveryNotes">;
+
+const requiredCheckoutFields: RequiredCheckoutField[] = [
   "firstName",
   "lastName",
   "email",
@@ -45,7 +48,7 @@ export function CheckoutPage() {
   }, [checkoutDetails]);
   const hasMissingRequiredFields = missingRequiredFields.length > 0;
 
-  const fieldLabels: Record<(typeof requiredCheckoutFields)[number], string> = {
+  const fieldLabels: Record<RequiredCheckoutField, string> = {
     firstName: "first name",
     lastName: "last name",
     email: "email",

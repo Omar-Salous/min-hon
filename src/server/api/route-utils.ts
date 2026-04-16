@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
-import { ZodError, type ZodSchema } from "zod";
+import { ZodError, z } from "zod";
 
-export async function parseJsonBody<T>(request: Request, schema: ZodSchema<T>) {
+export async function parseJsonBody<TSchema extends z.ZodTypeAny>(
+  request: Request,
+  schema: TSchema,
+): Promise<z.output<TSchema>> {
   const json = (await request.json()) as unknown;
   return schema.parse(json);
 }
